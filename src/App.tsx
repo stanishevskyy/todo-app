@@ -1,21 +1,33 @@
-import React from 'react';
-import './App.scss';
-
-interface Props {
-  onClick: () => void;
-  children: React.ReactNode;
-}
-
-export const Provider: React.FC<Props> = React.memo(({ onClick, children }) => (
-  <button type="button" onClick={onClick}>
-    {children}
-  </button>
-));
+/* eslint-disable jsx-a11y/control-has-associated-label */
+import React, { useContext, useState } from 'react';
+import { Header } from './components/Header/Header';
+import { TodoList } from './components/TodoList/TodoList';
+import { Footer } from './components/Footer/Footer';
+import { FilterType } from './types/FilterType';
+import { StateContext } from './store/GlobalProvider';
+import { getFilteredTodos } from './utils/getFilteredTodos';
 
 export const App: React.FC = () => {
+  const todos = useContext(StateContext);
+  const [filterTodoBy, setFilterTodoBy] = useState<FilterType>(FilterType.ALL);
+
+  const filteredTodos = getFilteredTodos(todos, filterTodoBy);
+
   return (
-    <div className="starter">
-      <Provider onClick={() => ({})}>TodoList</Provider>
+    <div className="todoapp">
+      <h1 className="todoapp__title">todos</h1>
+
+      <div className="todoapp__content">
+        <Header />
+
+        <TodoList filteredTodos={filteredTodos} />
+        {todos.length > 0 && (
+          <Footer
+            filterTodoBy={filterTodoBy}
+            setFilterTodoBy={setFilterTodoBy}
+          />
+        )}
+      </div>
     </div>
   );
 };
